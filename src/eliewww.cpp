@@ -19,11 +19,17 @@
 #include "../Sokol/sokol_gfx.h"
 #include "../Sokol/sokol_glue.h"
 #include "../Lib/dbgui/dbgui.h"
+#include "eliewww.glsl.h"
+
+/*ElieWWW Includes and libs*/
+#include "include/debug.h"
 
 
 void init(void) {
+    DEBUG->Log("Welcome to ElieWWW"); 
     printf("Welcome to ElieWWW\n");
-
+    
+ 
 }
 
 
@@ -47,5 +53,6 @@ sapp_desc sokol_main(int argc, char* argv[]) {
     desc.gl_force_gles2 = true;
     desc.window_title = "ElieWWW";
     desc.ios_keyboard_resizes_canvas = false;
+
     return desc;
 }
