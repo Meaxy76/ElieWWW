@@ -1,0 +1,26 @@
+;Register Cwc before using a .cwmake
+>
+-{_sOpt}="Alpha"
+>
+-{_wToolchain}= VLianceTool/LibRT
+>
+-{pLib}=../Lib/Lib_Debug/
+>
+-{pOut}=_out/{_sPlatform}_{_sOpt}/
+-{pLibDir}= ../Lib/Lib_{_sOpt}/
+-{pObj}= obj/{_sPlatform}_{_sOpt}/
+>
+-c ../src/ -o {pObj}src/
+	-I CpcSdk/include/
+>
+-o  {pObj}src/ -#To {pOut}ElieWWW.exe
+	-L {pLib}
+	-l CpcDos-dll
+	-Wl,--export-all-symbols 
+	-lgdi32
+	-lopengl32
+>
+-#Copy {pLib}CpcDos.dll {pOut}CpcDos.dll
+>
+-#Run
+>
