@@ -24,6 +24,7 @@ shdc --input ../src/eliewww.glsl --output eliewww.glsl.h --slang glsl330:glsl100
 	-lopengl32
 >
 -#Copy {pLib}CpcDos.dll {pOut}CpcDos.dll
+-#Copy opengl32.dll {pOut}opengl32.dll
 >
 -#Run
 >

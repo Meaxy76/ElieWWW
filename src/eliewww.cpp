@@ -9,6 +9,14 @@
  |_____|_|_|\___| \_/\_/      \_/\_/      \_/\_/   
  */
 
+
+
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+
+
 // Sokol Includes and defines
 #define HANDMADE_MATH_IMPLEMENTATION
 #define HANDMADE_MATH_NO_SSE
@@ -25,10 +33,28 @@
 #include "include/debug.h"
 
 
+sg_pass_action pass_action;
+
+
 void init(void) {
-    DEBUG->Log("Welcome to ElieWWW"); 
+    //DEBUG->Log("Welcome to ElieWWW"); 
     printf("Welcome to ElieWWW\n");
     
+    sg_desc desc = { };
+    desc.context = sapp_sgcontext();
+    sg_setup(&desc);
+
+
+    pass_action.colors[0].action = SG_ACTION_CLEAR;
+    pass_action.colors[0].val[0] = 0.0f;
+    pass_action.colors[0].val[1] = 0.5f;
+    pass_action.colors[0].val[2] = 0.7f;
+    pass_action.colors[0].val[3] = 0.5f;
+
+    sg_begin_default_pass(&pass_action, sapp_width(), sapp_height());
+    //render();
+    sg_end_pass();
+    sg_commit();
  
 }
 
