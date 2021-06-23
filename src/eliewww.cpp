@@ -23,26 +23,26 @@
 #include "Include/HandmadeMath.h"
 #define SOKOL_GLCORE33
 #define SOKOL_IMPL
+
 #include "../Sokol/sokol_app.h"
 #include "../Sokol/sokol_gfx.h"
 #include "../Sokol/sokol_glue.h"
 #include "../Lib/dbgui/dbgui.h"
-
 #include "eliewww.glsl.h"
+
 #define SOKOL_DEBUGTEXT_IMPL
 #include "../Sokol/util/sokol_debugtext.h"
+
 /*ElieWWW Includes and libs*/
 #include "include/debug.h"
+#include "include/ldr.hpp"
+#include "include/HTMLParser.hpp"
+#include "include/doc.hpp"
 
 
 sg_pass_action pass_action;
 
-#define FONT_KC853 (0)
-#define FONT_KC854 (1)
 #define FONT_Z1013 (2)
-#define FONT_CPC   (3)
-#define FONT_C64   (4)
-#define FONT_ORIC  (5)
 
 
 
@@ -54,26 +54,25 @@ void init(void) {
     sg_desc desc = { };
     desc.context = sapp_sgcontext();
     sg_setup(&desc);
-__dbgui_setup(sapp_sample_count());
-   pass_action.colors[0].action = SG_ACTION_CLEAR;
-   pass_action.colors[0].val[0] = 0.0f;
-   pass_action.colors[0].val[1] = 0.5f;
-   pass_action.colors[0].val[2] = 0.7f;
-   pass_action.colors[0].val[3] = 0.5f;
+    __dbgui_setup(sapp_sample_count());
+
+    pass_action.colors[0].action = SG_ACTION_CLEAR;
+    pass_action.colors[0].val[0] = 0.0f;
+    pass_action.colors[0].val[1] = 0.5f;
+    pass_action.colors[0].val[2] = 0.7f;
+    pass_action.colors[0].val[3] = 0.5f;
 
     sg_begin_default_pass(&pass_action, sapp_width(), sapp_height());
     //render();
     sg_end_pass();
     sg_commit();
 
-
-    // setup sokol-debugtext
     // setup sokol-debugtext
 
-sdtx_desc_t sdtx_desc = {};
+    sdtx_desc_t sdtx_desc = {};
 
-sdtx_desc.fonts[FONT_Z1013] = sdtx_font_z1013();
-sdtx_setup(&sdtx_desc);
+    sdtx_desc.fonts[FONT_Z1013] = sdtx_font_z1013();
+    sdtx_setup(&sdtx_desc);
 
 }
 
@@ -98,7 +97,7 @@ static void frame(void) {
     sdtx_canvas(sapp_width()*0.5f, sapp_height()*0.5f);
     sdtx_origin(0.0f, 2.0f);
     sdtx_home();
-    print_font(FONT_Z1013, "Welcome to ElieWWW, E-Mode\n",       0x4c, 0xaf, 0x50);
+    print_font(FONT_Z1013, "Welcome to ElieWWW, E-Mode\n",       51, 51, 51); // Text + RGB Color (51,51,51) 
 
     sg_begin_default_pass(&pass_action, sapp_width(), sapp_height());
     sdtx_draw();
