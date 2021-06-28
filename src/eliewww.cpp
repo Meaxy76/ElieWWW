@@ -15,7 +15,9 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
 
 // Sokol Includes and defines
 #define HANDMADE_MATH_IMPLEMENTATION
@@ -32,20 +34,20 @@
 
 #define SOKOL_DEBUGTEXT_IMPL
 #include "../Sokol/util/sokol_debugtext.h"
+//#include "Include/Weigl.h"
 
 /*ElieWWW Includes and libs*/
+
 #include "include/debug.h"
-#include "include/ldr.hpp"
-#include "include/HTMLParser.hpp"
-#include "include/doc.hpp"
+//#include "include/HTMLParser.hpp"
+//#include "include/doc.hpp"
+#include "include/CpcSdk.h"
 
 
 sg_pass_action pass_action;
 
+#define FONT_WEIGL (1)
 #define FONT_Z1013 (2)
-
-
-
 
 void init(void) {
     //DEBUG->Log("Welcome to ElieWWW"); 
@@ -57,9 +59,9 @@ void init(void) {
     __dbgui_setup(sapp_sample_count());
 
     pass_action.colors[0].action = SG_ACTION_CLEAR;
-    pass_action.colors[0].val[0] = 0.0f;
-    pass_action.colors[0].val[1] = 0.5f;
-    pass_action.colors[0].val[2] = 0.7f;
+    pass_action.colors[0].val[0] = 1.0f;
+    pass_action.colors[0].val[1] = 1.0f;
+    pass_action.colors[0].val[2] = 1.0f;
     pass_action.colors[0].val[3] = 0.5f;
 
     sg_begin_default_pass(&pass_action, sapp_width(), sapp_height());
@@ -67,38 +69,49 @@ void init(void) {
     sg_end_pass();
     sg_commit();
 
-    // setup sokol-debugtext
-
     sdtx_desc_t sdtx_desc = {};
 
     sdtx_desc.fonts[FONT_Z1013] = sdtx_font_z1013();
+    //sdtx_desc.fonts[FONT_WEIGL] = _elie_font_Weigl();
     sdtx_setup(&sdtx_desc);
 
 }
 
-
-static void print_font(int font_index, const char* title, uint8_t r, uint8_t g, uint8_t b) {
-    sdtx_font(font_index);
-    sdtx_color3b(r, g, b);
-    sdtx_puts(title);
-    for (int c = 32; c < 256; c++) {
-        sdtx_putc(c);
-        if (((c + 1) & 63) == 0) {
-            sdtx_crlf();
-        }
-    }
-    sdtx_crlf();
-}
 
 static void frame(void) {
 
     // set virtual canvas size to half display size so that
     // glyphs are 16x16 display pixels
     sdtx_canvas(sapp_width()*0.5f, sapp_height()*0.5f);
-    sdtx_origin(0.0f, 2.0f);
+    sdtx_origin(0.0f, 0.0f);
     sdtx_home();
-    print_font(FONT_Z1013, "Welcome to ElieWWW, E-Mode\n",       51, 51, 51); // Text + RGB Color (51,51,51) 
+    sdtx_font(2);
+    sdtx_color3b(51, 51, 51); // Rouge, Vert, Bleu
+    //sdtx_puts("Welcome to ElieWWW, E-Mode for Cpcdos OSx");
 
+    FILE* html = std::fopen("files/test.html", "rb");
+
+   if (html != NULL){
+       printf("File loaded\n");
+       char buffer[800000];
+             fread(buffer,sizeof(buffer),1,html);
+             sdtx_printf(buffer);
+
+             //ElieWWWHTMLParser parser;
+             //ElieDoc doc;
+             
+            // parser.HTMLParser();
+             // parser.build_doc_from_string(html);
+             //doc.Elie_Doc();
+            
+             // cpc_eval("/F:ELIE.MSGBOX(Hello!!!!,ElieOS,1,0)");
+    }else{
+		 sdtx_printf("Error Loading File test.html");
+	}
+      
+
+    fclose (html);
+    //  free (buffer);
     sg_begin_default_pass(&pass_action, sapp_width(), sapp_height());
     sdtx_draw();
     __dbgui_draw();
@@ -115,7 +128,7 @@ void cleanup(void) {
 }
 
 
-#include <stdio.h>
+
 
 sapp_desc sokol_main(int argc, char* argv[]) {
     (void)argc; (void)argv;
