@@ -39,9 +39,10 @@
 /*ElieWWW Includes and libs*/
 
 #include "include/debug.h"
-//#include "include/HTMLParser.hpp"
+//#include "include/ElieHTMLParser.hpp"
 //#include "include/doc.hpp"
 #include "include/CpcSdk.h"
+#include "Include/ElieHTMLParser.hpp"
 
 
 sg_pass_action pass_action;
@@ -78,6 +79,8 @@ void init(void) {
 }
 
 
+
+
 static void frame(void) {
 
     // set virtual canvas size to half display size so that
@@ -93,16 +96,16 @@ static void frame(void) {
 
    if (html != NULL){
        printf("File loaded\n");
-       char buffer[800000];
+       char buffer[4096];
              fread(buffer,sizeof(buffer),1,html);
-             sdtx_printf(buffer);
-
-             //ElieWWWHTMLParser parser;
-             //ElieDoc doc;
-             
-            // parser.HTMLParser();
-             // parser.build_doc_from_string(html);
-             //doc.Elie_Doc();
+             //sdtx_printf(buffer);
+            
+            string test = (buffer);
+             //sdtx_printf(test);
+            // printf(test);
+         
+            test = HTMLReader(test);
+            sdtx_printf( (test).c_str() );
             
              // cpc_eval("/F:ELIE.MSGBOX(Hello!!!!,ElieOS,1,0)");
     }else{
@@ -130,6 +133,7 @@ void cleanup(void) {
 
 
 
+
 sapp_desc sokol_main(int argc, char* argv[]) {
     (void)argc; (void)argv;
     sapp_desc desc = { };
@@ -137,8 +141,8 @@ sapp_desc sokol_main(int argc, char* argv[]) {
     desc.frame_cb = frame;
     desc.cleanup_cb = cleanup;
     //desc.event_cb = input;
-    desc.width = 600;
-    desc.height = 480;
+    desc.width = 800;
+    desc.height = 600;
     desc.gl_force_gles2 = true;
     desc.window_title = "ElieWWW";
     desc.ios_keyboard_resizes_canvas = false;
