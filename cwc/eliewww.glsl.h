@@ -235,16 +235,16 @@ static const char fs_source_glsl300es[175] = {
     0x72,0x20,0x3d,0x20,0x63,0x6f,0x6c,0x6f,0x72,0x3b,0x0a,0x7d,0x0a,0x0a,0x00,
 };
 #if !defined(SOKOL_GFX_INCLUDED)
-  #error "Please include sokol_gfx.h before eliewww.glsl.h"
+  #error "Please include sokol_gfx.h before loadpng-sapp.glsl.h"
 #endif
-static inline const sg_shader_desc* cube_shader_desc(void) {
+static inline const sg_shader_desc* loadpng_shader_desc(void) {
   if (sg_query_backend() == SG_BACKEND_GLCORE33) {
     static sg_shader_desc desc;
     static bool valid;
     if (!valid) {
       valid = true;
-      desc.attrs[0].name = "position";
-      desc.attrs[1].name = "color0";
+      desc.attrs[0].name = "pos";
+      desc.attrs[1].name = "texcoord0";
       desc.vs.source = vs_source_glsl330;
       desc.vs.entry = "main";
       desc.vs.uniform_blocks[0].size = 64;
@@ -253,7 +253,10 @@ static inline const sg_shader_desc* cube_shader_desc(void) {
       desc.vs.uniform_blocks[0].uniforms[0].array_count = 4;
       desc.fs.source = fs_source_glsl330;
       desc.fs.entry = "main";
-      desc.label = "cube_shader";
+      desc.fs.images[0].name = "tex";
+      desc.fs.images[0].type = SG_IMAGETYPE_2D;
+      desc.fs.images[0].sampler_type = SG_SAMPLERTYPE_FLOAT;
+      desc.label = "loadpng_shader";
     };
     return &desc;
   }
@@ -262,8 +265,8 @@ static inline const sg_shader_desc* cube_shader_desc(void) {
     static bool valid;
     if (!valid) {
       valid = true;
-      desc.attrs[0].name = "position";
-      desc.attrs[1].name = "color0";
+      desc.attrs[0].name = "pos";
+      desc.attrs[1].name = "texcoord0";
       desc.vs.source = vs_source_glsl100;
       desc.vs.entry = "main";
       desc.vs.uniform_blocks[0].size = 64;
@@ -272,7 +275,10 @@ static inline const sg_shader_desc* cube_shader_desc(void) {
       desc.vs.uniform_blocks[0].uniforms[0].array_count = 4;
       desc.fs.source = fs_source_glsl100;
       desc.fs.entry = "main";
-      desc.label = "cube_shader";
+      desc.fs.images[0].name = "tex";
+      desc.fs.images[0].type = SG_IMAGETYPE_2D;
+      desc.fs.images[0].sampler_type = SG_SAMPLERTYPE_FLOAT;
+      desc.label = "loadpng_shader";
     };
     return &desc;
   }
@@ -281,8 +287,8 @@ static inline const sg_shader_desc* cube_shader_desc(void) {
     static bool valid;
     if (!valid) {
       valid = true;
-      desc.attrs[0].name = "position";
-      desc.attrs[1].name = "color0";
+      desc.attrs[0].name = "pos";
+      desc.attrs[1].name = "texcoord0";
       desc.vs.source = vs_source_glsl300es;
       desc.vs.entry = "main";
       desc.vs.uniform_blocks[0].size = 64;
@@ -291,7 +297,10 @@ static inline const sg_shader_desc* cube_shader_desc(void) {
       desc.vs.uniform_blocks[0].uniforms[0].array_count = 4;
       desc.fs.source = fs_source_glsl300es;
       desc.fs.entry = "main";
-      desc.label = "cube_shader";
+      desc.fs.images[0].name = "tex";
+      desc.fs.images[0].type = SG_IMAGETYPE_2D;
+      desc.fs.images[0].sampler_type = SG_SAMPLERTYPE_FLOAT;
+      desc.label = "loadpng_shader";
     };
     return &desc;
   }

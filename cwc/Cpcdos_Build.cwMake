@@ -1,6 +1,6 @@
 ;Register Cwc before using a .cwmake
 >
--{_sOpt}="Alpha"
+-{_sOpt}="Debug"
 >
 -{_wToolchain}= VLianceTool/LibRT
 >
@@ -12,7 +12,7 @@
 -{pObj}= obj/{_sPlatform}_{_sOpt}/
 >
 ;Build Shader
-shdc --input ../src/eliewww.glsl --output eliewww.glsl.h --slang glsl330:glsl100:glsl300es
+;shdc --input ../src/eliewww.glsl --output eliewww.glsl.h --slang glsl330:glsl100:glsl300es
 >
 -c ../src/ -o {pObj}src/
 	-I CpcSdk/include/
