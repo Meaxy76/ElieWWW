@@ -1,3 +1,6 @@
+//------------------------------------------------------------------------------
+//  Shader code for loadpng-sapp sample.
+//------------------------------------------------------------------------------
 @ctype mat4 hmm_mat4
 
 @vs vs
@@ -5,24 +8,27 @@ uniform vs_params {
     mat4 mvp;
 };
 
-in vec4 position;
-in vec4 color0;
-
-out vec4 color;
+in vec4 pos;
+in vec2 texcoord0;
+out vec2 uv;
 
 void main() {
-    gl_Position = mvp * position;
-    color = color0;
+    gl_Position = mvp * pos;
+    uv = texcoord0;
 }
 @end
 
 @fs fs
-in vec4 color;
+uniform sampler2D tex;
+
+in vec2 uv;
 out vec4 frag_color;
 
 void main() {
-    frag_color = color;
+    frag_color = texture(tex, uv);
 }
 @end
 
-@program cube vs fs
+@program loadpng vs fs
+
+

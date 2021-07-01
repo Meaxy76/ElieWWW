@@ -1,7 +1,5 @@
 /* 
  ElieWWW for Cpcdos OSx Beta 1.5
- We will try to open a html page from local 
- We will use Cpcdos Shell to download web page and load them in ElieWWW
   _____ _ _    __        ____        ____        __
  | ____| (_) __\ \      / /\ \      / /\ \      / /
  |  _| | | |/ _ \ \ /\ / /  \ \ /\ / /  \ \ /\ / / 
@@ -31,20 +29,18 @@
 #include "../Sokol/sokol_glue.h"
 #include "../Sokol/sokol_fetch.h"
 #include "../Lib/dbgui/dbgui.h"
-
-#include "eliewww.glsl.h"
-//#include "loadpng-sapp.glsl.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "../Lib/stb/stb_image.h"
 
 #define SOKOL_DEBUGTEXT_IMPL
 #include "../Sokol/util/sokol_debugtext.h"
+#include "eliewww.glsl.h"
+//#include "loadpng-sapp.glsl.h"
+
 //#include "Include/Weigl.h"
-#define STB_IMAGE_IMPLEMENTATION
-#include "../Lib/stb/stb_image.h"
 /*ElieWWW Includes and libs*/
 
 #include "include/debug.h"
-//#include "include/ElieHTMLParser.hpp"
-//#include "include/doc.hpp"
 #include "include/CpcSdk.h"
 #include "Include/ElieHTMLParser.hpp"
 
@@ -59,6 +55,7 @@ typedef struct {
 
 
 sg_pass_action pass_action;
+float rx, ry;
 uint8_t file_buffer[256 * 1024];
 sg_bindings bind = {};
 sg_pipeline pip;
@@ -72,7 +69,7 @@ static void fetch_callback(const sfetch_response_t*);
 
 void init(void) {
     //DEBUG->Log("Welcome to ElieWWW"); 
-    printf("Welcome to ElieWWW\n");
+    //printf("Welcome to ElieWWW\n");
 
     
     sg_desc desc = { };
@@ -99,10 +96,12 @@ void init(void) {
 
         const vertex_t vertices[] = {
         /* pos                  uvs */
-        { -1.0f, -1.0f, -1.0f,      0,     0 },
-        {  1.0f, -1.0f, -1.0f,  32767,     0 },
-        {  1.0f,  1.0f, -1.0f,  32767, 32767 },
-        { -1.0f,  1.0f, -1.0f,      0, 32767 },
+
+        {  1.0f, -1.0f, -1.0f,      0,     0 },
+        {  1.0f,  1.0f, -1.0f,  32767,     0 },
+        {  1.0f,  1.0f,  1.0f,  32767, 32767 },
+        {  1.0f, -1.0f,  1.0f,      0, 32767 },
+
 
             };
 
@@ -112,6 +111,17 @@ void init(void) {
         ohmy.content = vertices;
         ohmy.label = "face";
         bind.vertex_buffers[0] = sg_make_buffer(ohmy);
+
+        /* create an index buffer for the cube */
+        const uint16_t indices[] = {
+                 0, 1, 2,  0, 2, 3
+        };
+        sg_buffer_desc idx_buff = {};
+        idx_buff.type = SG_BUFFERTYPE_INDEXBUFFER;
+        idx_buff.size = sizeof(indices);
+        idx_buff.content = indices;
+        idx_buff.label = "cube-indices";
+        bind.index_buffer =  sg_make_buffer(&idx_buff);
 
         /* a pipeline state object */
 
@@ -133,7 +143,7 @@ void init(void) {
          pip = sg_make_pipeline(&letsgo );
 
       sfetch_request_t fetchernya = {};
-          fetchernya.path = "files/nko.png";
+          fetchernya.path = "files/elie.png";
           fetchernya.callback = fetch_callback;
           fetchernya.buffer_ptr = file_buffer;
           fetchernya.buffer_size = sizeof(file_buffer);
@@ -167,22 +177,22 @@ static void frame(void) {
     sdtx_color3b(51, 51, 51); // Rouge, Vert, Bleu
     //sdtx_puts("Welcome to ElieWWW, E-Mode for Cpcdos OSx");
 
+         /* compute model-view-projection matrix for vertex shader */
+    hmm_mat4 proj = HMM_Perspective(60.0f, (float)sapp_width()/(float)sapp_height(), 0.01f, 10.0f);
+    hmm_mat4 view = HMM_LookAt(HMM_Vec3(0.0f, 1.5f, 6.0f), HMM_Vec3(0.0f, 0.0f, 0.0f), HMM_Vec3(0.0f, 1.0f, 0.0f));
+    hmm_mat4 view_proj = HMM_MultiplyMat4(proj, view);
+    vs_params_t vs_params;
+    rx += 1.0f; ry += 2.0f;
+    hmm_mat4 rxm = HMM_Rotate(rx, HMM_Vec3(1.0f, 0.0f, 0.0f));
+    hmm_mat4 rym = HMM_Rotate(ry, HMM_Vec3(0.0f, 1.0f, 0.0f));
+    hmm_mat4 model = HMM_MultiplyMat4(rxm, rym);
+    vs_params.mvp = HMM_MultiplyMat4(view_proj, model);
+
     FILE* html = std::fopen("files/test.html", "rb");
 
-   // sfetch_send blabka; 
-   
-
-
-       
-    //sfetch_send(&(sfetch_request_t){
-      //  .path = "files/nko.png",
-      //  .callback = fetch_callback,
-      //  .buffer_ptr = file_buffer,
-      //  .buffer_size = sizeof(file_buffer)
-    //});
 
    if (html != NULL){
-       printf("File loaded\n");
+      // printf("File loaded\n");
        char buffer[4096];
              fread(buffer,sizeof(buffer),1,html);
              //sdtx_printf(buffer);
@@ -203,10 +213,12 @@ static void frame(void) {
     fclose (html);
     //  free (buffer);
     sg_begin_default_pass(&pass_action, sapp_width(), sapp_height());
-    sg_apply_bindings(&bind);
     sg_apply_pipeline(pip);
-    sdtx_draw();
+    sg_apply_bindings(&bind);
+    sg_apply_uniforms(SG_SHADERSTAGE_VS, SLOT_vs_params, &vs_params, sizeof(vs_params));
+    sg_draw(0, 6, 1);
     __dbgui_draw();
+    sdtx_draw();
     sg_end_pass();
     sg_commit();
 }
@@ -253,14 +265,14 @@ static void fetch_callback(const sfetch_response_t* response) {
 }
 
 //GDB will automaticly break here (with Cwc compiler)
-extern "C" void GDB_Func_Break(){}
-extern "C" void GDB_Func_ExecuteCmds(){} 
+// extern "C" void GDB_Func_Break(){}
+//extern "C" void GDB_Func_ExecuteCmds(){} 
 
-void GDB_BreakAssert(){
-    fprintf(stderr,"Cmd[GDB]:break _assert\n");
-    fflush(stderr);
-    GDB_Func_ExecuteCmds();
-}
+//void GDB_BreakAssert(){
+ //   fprintf(stderr,"Cmd[GDB]:break _assert\n");
+ //   fflush(stderr);
+ //   GDB_Func_ExecuteCmds();
+//}
 
 
 void cleanup(void) {
@@ -276,7 +288,7 @@ void cleanup(void) {
 
 sapp_desc sokol_main(int argc, char* argv[]) {
 
-    GDB_BreakAssert();
+   // GDB_BreakAssert();
 
 
     (void)argc; (void)argv;

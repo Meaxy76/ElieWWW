@@ -12,7 +12,7 @@
 -{pObj}= obj/{_sPlatform}_{_sOpt}/
 >
 ;Build Shader
-;shdc --input ../src/eliewww.glsl --output eliewww.glsl.h --slang glsl330:glsl100:glsl300es
+shdc --input ../src/eliewww.glsl --output eliewww.glsl.h --slang glsl330:glsl100:glsl300es
 >
 -c ../src/ -o {pObj}src/
 	-I CpcSdk/include/

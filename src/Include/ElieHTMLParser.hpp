@@ -52,6 +52,10 @@ std::map<std::string,std::string> no_contents_map = {
     {"<style", "</style>"},
 };
 
+std::map<std::string,std::string> image_source = {
+    {"src=\"", "\""},
+};
+
 std::map<std::string,std::string> conversion_map = {
     {"<title", "\33\[37m\n"},
     {"<a", "\33\[34m"},
